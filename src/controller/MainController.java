@@ -91,7 +91,7 @@ public class MainController {
         currentFocusWord = cmd.getTargetWord();
     }
 
-    /** executes a dedicated command to compute and display a group centroid. */
+    /** executes a dedicated command to compute and display a group centroid */
     public void computeGroupCentroid(String input, int k) {
         ComputeCentroidCommand cmd = new ComputeCentroidCommand(service, renderer, resultLabel, currentFocusWord, input, k);
         commandManager.executeCommand(cmd);

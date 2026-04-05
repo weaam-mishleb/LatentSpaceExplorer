@@ -6,7 +6,7 @@ import view.IRenderer;
 //10
 /**
  * this abstract class serves as the foundation for all visual actions in the system.
- * it centralizes common logic (like preparing the screen and undoing actions) to prevent
+ * it centralizes common logic (like preparing the screen and undoing actions)
  */
 public abstract class AbstractVisualCommand implements Command {
     protected final IRenderer renderer;

@@ -38,7 +38,7 @@ public class Launcher {
         }
 
         // Launches the UI application
-        Visualizer visualizer = new JavaFX3DVisualizer();
+        Visualizer visualizer = new JavaFXVisualizer();
         visualizer.display(fullSpace, pcaSpace);
     }
 }

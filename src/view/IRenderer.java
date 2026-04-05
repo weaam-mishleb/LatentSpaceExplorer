@@ -1,35 +1,57 @@
 package view;
 
+import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
 import model.ProjectionResult;
+import model.VectorSpace;
 import java.util.List;
-//20
+import java.util.function.Consumer;
+
 /**
- *this interface defines the rendering capabilities required for the 3D visualization.
- * it decouples the visual logic from the specific JavaFX implementation.
+ * This interface defines the rendering capabilities required for visual representation.
+ * It decouples the visual logic from the specific JavaFX implementation (2D or 3D).
  */
 public interface IRenderer {
-    /** clears all drawn lines (relationships) from the 3D scene. */
-    void clearLines();
 
-    /** resets all sphere (word) colors to their default state. */
-    void resetSphereColors();
+    // --- Lifecycle and Initialization ---
 
-    /** returns the 3D camera to its original starting position and orientation. */
+    /** sets the callback for when a word node is clicked. */
+    void setOnWordClicked(Consumer<String> onWordClicked);
+
+    /** creates and returns the JavaFX SubScene containing the visualization. */
+    SubScene createSubScene(double width, double height);
+
+    /** initializes the visual space with nodes representing the word embeddings. */
+    void initializeSpace(VectorSpace space);
+
+    /** updates the coordinates of all nodes, allowing transitions between dimensions. */
+    void updateAllPositions(int x, int y, int z, boolean is3DMode);
+
+    // --- Viewport Controls ---
+
+    /** returns the viewpoint/camera to its original starting position. */
     void resetCamera();
 
-    /** highlights a specific word by changing its color and size in the 3D space. */
-    void highlightWord(String word, Color c, double radius);
-
-    /** moves the camera to focus closely on a specific word's vector position. */
+    /** moves the viewpoint to focus closely on a specific word's position. */
     void zoomToWord(String word);
+
+    /** adjusts the viewpoint to fit two specific points/words into the view. */
+    void focusOnTwoPoints(String w1, String w2);
+
+    // --- Visual Manipulation ---
+
+    /** clears all drawn lines (relationships) from the scene. */
+    void clearLines();
+
+    /** resets all node (word) colors to their default state. */
+    void resetSphereColors();
+
+    /** highlights a specific word by changing its color and size. */
+    void highlightWord(String word, Color c, double radius);
 
     /** draws a physical line between two word vectors to represent a relationship. */
     void drawLineBetweenWords(String word1, String word2);
 
-    /** adjusts the camera to fit two specific points/words into the view. */
-    void focusOnTwoPoints(String w1, String w2);
-
-    /** applies a color gradient to spheres based on their position on a projection axis. */
+    /** applies a color gradient to nodes based on their position on a projection axis. */
     void applyProjectionGradient(List<ProjectionResult> projection);
 }

@@ -9,10 +9,19 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.VectorSpace;
 
-public class JavaFX3DVisualizer extends Application implements Visualizer {
+import java.util.function.Consumer;
+
+public class JavaFXVisualizer extends Application implements Visualizer {
     private static VectorSpace fullSpace;
     private static VectorSpace pcaSpace;
-    private SceneRenderer renderer;
+
+    // Holding both renderers!
+    private SceneRenderer3D renderer3D;
+    private SceneRenderer2D renderer2D;
+    private SubScene subScene3D;
+    private SubScene subScene2D;
+
+    private Pane viewContainer; // The box that holds the active view
     private MainController controller;
 
     private Label floatingLabel;
@@ -23,8 +32,8 @@ public class JavaFX3DVisualizer extends Application implements Visualizer {
 
     @Override
     public void display(VectorSpace fullSpace, VectorSpace pcaSpace) {
-        JavaFX3DVisualizer.fullSpace = fullSpace;
-        JavaFX3DVisualizer.pcaSpace = pcaSpace;
+        JavaFXVisualizer.fullSpace = fullSpace;
+        JavaFXVisualizer.pcaSpace = pcaSpace;
         launch();
     }
 
@@ -34,23 +43,37 @@ public class JavaFX3DVisualizer extends Application implements Visualizer {
 
         createFloatingLabel(mainLayout);
         createResultOverlay(mainLayout);
-        renderer = new SceneRenderer(floatingLabel);
-        renderer.initializeSpace(pcaSpace);
         metricGroup = new ToggleGroup();
-        controller = new MainController(fullSpace, renderer, resultLabel, metricGroup);
-        renderer.setOnWordClicked(clickedWord -> {
-            controller.executeWithHistory(() -> controller.showNearestNeighbors(clickedWord), clickedWord);
-        });
+
+        // 1. Initialize both renderers
+        renderer3D = new SceneRenderer3D(floatingLabel);
+        renderer3D.initializeSpace(pcaSpace);
+        subScene3D = renderer3D.createSubScene(1000, 800);
+
+        renderer2D = new SceneRenderer2D(floatingLabel);
+        renderer2D.initializeSpace(pcaSpace);
+        subScene2D = renderer2D.createSubScene(1000, 800);
+
+        // 2. Initialize Controller with default 3D
+        controller = new MainController(fullSpace, renderer3D, resultLabel, metricGroup);
+
+        // 3. Bind click events DIRECTLY (No more double-push bug!)
+        Consumer<String> onWordClicked = clickedWord -> controller.showNearestNeighbors(clickedWord);
+        renderer3D.setOnWordClicked(onWordClicked);
+        renderer2D.setOnWordClicked(onWordClicked);
 
         createUndoOverlay(mainLayout);
 
-        SubScene subScene = renderer.createSubScene(1000, 800);
-        Pane d3Container = new Pane(subScene);
-        mainLayout.getChildren().add(d3Container);
+        // 4. Setup the View Container
+        viewContainer = new Pane(subScene3D); // Start with 3D
+        mainLayout.getChildren().add(viewContainer);
+        viewContainer.toBack();
 
-        d3Container.toBack();
-        subScene.widthProperty().bind(mainLayout.widthProperty());
-        subScene.heightProperty().bind(mainLayout.heightProperty());
+        // Bind sizes for both scenes
+        subScene3D.widthProperty().bind(mainLayout.widthProperty());
+        subScene3D.heightProperty().bind(mainLayout.heightProperty());
+        subScene2D.widthProperty().bind(mainLayout.widthProperty());
+        subScene2D.heightProperty().bind(mainLayout.heightProperty());
 
         TabPane bottomTabs = createBottomTabs();
         mainLayout.getChildren().add(bottomTabs);
@@ -59,7 +82,7 @@ public class JavaFX3DVisualizer extends Application implements Visualizer {
         AnchorPane.setRightAnchor(bottomTabs, 0.0);
 
         Scene mainScene = new Scene(mainLayout, 1100, 750);
-        primaryStage.setTitle("Latent Space Explorer");
+        primaryStage.setTitle("Latent Space Explorer - 2D/3D Engine");
         primaryStage.setScene(mainScene);
         primaryStage.show();
     }
@@ -94,10 +117,15 @@ public class JavaFX3DVisualizer extends Application implements Visualizer {
         toggle2D3D.setOnAction(e -> toggleDimensionMode());
 
         xCombo = createCombo(0); yCombo = createCombo(1); zCombo = createCombo(2);
+
+        // Pass direct method references without executeWithHistory wrappers!
         Tab exploreTab = TabFactory.createExploreTab(
-                () -> controller.executeWithHistory(() -> controller.zoomToWordAction(txtSearch.getText()), txtSearch.getText()),
-                () -> controller.executeWithHistory(() -> controller.showNearestNeighbors(txtSearch.getText()), txtSearch.getText()),
-                () -> renderer.resetCamera(),
+                () -> controller.zoomToWordAction(txtSearch.getText()),
+                () -> controller.showNearestNeighbors(txtSearch.getText()),
+                () -> {
+                    renderer3D.resetCamera();
+                    renderer2D.resetCamera();
+                },
                 toggle2D3D,
                 this::updateAllPositions,
                 xCombo, yCombo, zCombo,
@@ -105,9 +133,10 @@ public class JavaFX3DVisualizer extends Application implements Visualizer {
         );
 
         Tab mathTab = TabFactory.createMathTab(
-                (w1, w2) -> controller.executeWithHistory(() -> controller.calculateAndShowDistance(w1, w2), w1),
-                (a, b, c) -> controller.executeWithHistory(() -> controller.computeAnalogy(a, b, c), "Analogy"),
-                (grp, k) -> controller.executeWithHistory(() -> controller.computeGroupCentroid(grp, k), "Centroid"),                (s, e) -> controller.executeWithHistory(() -> controller.showProjection(s, e), "Projection"),
+                (w1, w2) -> controller.calculateAndShowDistance(w1, w2),
+                (a, b, c) -> controller.computeAnalogy(a, b, c),
+                (grp, k) -> controller.computeGroupCentroid(grp, k),
+                (s, e) -> controller.showProjection(s, e),
                 controller::updateMetricStrategy,
                 metricGroup
         );
@@ -138,17 +167,33 @@ public class JavaFX3DVisualizer extends Application implements Visualizer {
         return box;
     }
 
+    // THE MAGIC SWAP: Change view and inject new renderer to controller!
     private void toggleDimensionMode() {
         boolean is3D = toggle2D3D.isSelected();
         toggle2D3D.setText(is3D ? "Mode: 3D" : "Mode: 2D");
         resultLabel.setText(is3D ? "Switched to 3D Mode" : "Switched to 2D Mode");
-        renderer.updateAllPositions(xCombo.getValue(), yCombo.getValue(), zCombo.getValue(), is3D);
+
+        viewContainer.getChildren().clear();
+
+        if (is3D) {
+            controller.setRenderer(renderer3D);
+            viewContainer.getChildren().add(subScene3D);
+        } else {
+            controller.setRenderer(renderer2D);
+            viewContainer.getChildren().add(subScene2D);
+        }
+
+        updateAllPositions();
     }
 
     private void updateAllPositions() {
-        renderer.updateAllPositions(xCombo.getValue(), yCombo.getValue(), zCombo.getValue(), toggle2D3D.isSelected());
+        boolean is3D = toggle2D3D.isSelected();
+        if (is3D) {
+            renderer3D.updateAllPositions(xCombo.getValue(), yCombo.getValue(), zCombo.getValue(), true);
+        } else {
+            renderer2D.updateAllPositions(xCombo.getValue(), yCombo.getValue(), zCombo.getValue(), false);
+        }
     }
 
     @Override public void highlight(String word) { controller.zoomToWordAction(word); }
-     public void updateView() {}
 }

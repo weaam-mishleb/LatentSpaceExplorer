@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class SceneRenderer implements IRenderer {
+public class SceneRenderer3D implements IRenderer {
     private final Group mainSceneRoot = new Group();
     private final Group worldRoot = new Group();
     private final Group linesGroup = new Group();
@@ -39,7 +39,7 @@ public class SceneRenderer implements IRenderer {
     private final Label floatingLabel;
     private Consumer<String> onWordClicked;
 
-    public SceneRenderer(Label floatingLabel) {
+    public SceneRenderer3D(Label floatingLabel) {
         this.floatingLabel = floatingLabel;
         worldRoot.getChildren().add(linesGroup);
         worldRoot.getChildren().add(labelsGroup);
@@ -110,9 +110,10 @@ public class SceneRenderer implements IRenderer {
         sphereToWordMap.put(sphere, word);
         wordToSphereMap.put(word.getWord(), sphere);
 
-        sphere.setTranslateX(word.getCoordinate(0) * SCALE);
-        sphere.setTranslateY(word.getCoordinate(1) * SCALE);
-        sphere.setTranslateZ(word.getCoordinate(2) * SCALE);
+        // Updated to use the new Vector interface!
+        sphere.setTranslateX(word.getVector().getValueAt(0) * SCALE);
+        sphere.setTranslateY(word.getVector().getValueAt(1) * SCALE);
+        sphere.setTranslateZ(word.getVector().getValueAt(2) * SCALE);
 
         sphere.setOnMouseEntered(e -> {
             if (sphere.getRadius() < 5) highlightSphere(sphere, Color.ORANGE, 6);
@@ -144,9 +145,11 @@ public class SceneRenderer implements IRenderer {
         for (Map.Entry<Sphere, WordEmbedding> entry : sphereToWordMap.entrySet()) {
             WordEmbedding word = entry.getValue();
             Sphere sphere = entry.getKey();
-            sphere.setTranslateX(word.getCoordinate(x) * SCALE);
-            sphere.setTranslateY(word.getCoordinate(y) * SCALE);
-            sphere.setTranslateZ(is3DMode ? word.getCoordinate(z) * SCALE : 0);
+
+            // Updated to use the new Vector interface!
+            sphere.setTranslateX(word.getVector().getValueAt(x) * SCALE);
+            sphere.setTranslateY(word.getVector().getValueAt(y) * SCALE);
+            sphere.setTranslateZ(is3DMode ? word.getVector().getValueAt(z) * SCALE : 0);
         }
         if (!is3DMode) {
             rotateX.setAngle(0); rotateY.setAngle(0);
@@ -195,14 +198,17 @@ public class SceneRenderer implements IRenderer {
             background.setArcHeight(10);
             background.widthProperty().bind(textLabel.layoutBoundsProperty().map(b -> b.getWidth() + 8));
             background.heightProperty().bind(textLabel.layoutBoundsProperty().map(b -> b.getHeight() + 4));
+
             javafx.scene.layout.StackPane labelContainer = new javafx.scene.layout.StackPane(background, textLabel);
             labelContainer.setTranslateX(0);
             labelContainer.setTranslateY(0);
             labelContainer.setTranslateZ(0);
+
             javafx.scene.transform.Rotate invRotX = new javafx.scene.transform.Rotate(0, javafx.scene.transform.Rotate.X_AXIS);
             invRotX.angleProperty().bind(rotateX.angleProperty().multiply(-1));
             javafx.scene.transform.Rotate invRotY = new javafx.scene.transform.Rotate(0, javafx.scene.transform.Rotate.Y_AXIS);
             invRotY.angleProperty().bind(rotateY.angleProperty().multiply(-1));
+
             labelContainer.getTransforms().add(new javafx.scene.transform.Translate(s.getTranslateX(), s.getTranslateY(), s.getTranslateZ()));
             labelContainer.getTransforms().addAll(invRotY, invRotX); // Apply billboard
             labelContainer.getTransforms().add(new javafx.scene.transform.Translate(radius + 10, -radius - 15, -1)); // offset from sphere
@@ -213,14 +219,16 @@ public class SceneRenderer implements IRenderer {
 
     private void highlightSphere(Sphere s, Color c, double r) {
         if (s == null) return;
-        s.setRadius(r); ((PhongMaterial) s.getMaterial()).setDiffuseColor(c);
+        s.setRadius(r);
+        ((PhongMaterial) s.getMaterial()).setDiffuseColor(c);
     }
 
     @Override
     public void resetSphereColors() {
         for (Sphere s : sphereToWordMap.keySet()) {
             s.setRadius(4);
-            ((PhongMaterial) s.getMaterial()).setDiffuseColor(Color.web("#004488")); // חזר לכחול כהה
+            // Revert to dark blue
+            ((PhongMaterial) s.getMaterial()).setDiffuseColor(Color.web("#004488"));
         }
     }
 
@@ -229,12 +237,15 @@ public class SceneRenderer implements IRenderer {
         if (projection == null || projection.isEmpty()) return;
         double min = Double.MAX_VALUE;
         double max = -Double.MAX_VALUE;
+
         for (model.ProjectionResult entry : projection) {
             double val = entry.getProjectionValue();
             if (val < min) min = val;
             if (val > max) max = val;
         }
+
         double range = (max - min) == 0 ? 1 : (max - min);
+
         for (model.ProjectionResult entry : projection) {
             String word = entry.getWord();
             Double val = entry.getProjectionValue();
@@ -272,6 +283,7 @@ public class SceneRenderer implements IRenderer {
         double height = diff.magnitude();
         Point3D mid = target.midpoint(origin);
         Translate moveToMidpoint = new Translate(mid.getX(), mid.getY(), mid.getZ());
+
         Point3D axisOfRotation = diff.crossProduct(yAxis);
         double angle = Math.acos(diff.normalize().dotProduct(yAxis));
         Rotate rotateAroundCenter = new Rotate(-Math.toDegrees(angle), axisOfRotation);

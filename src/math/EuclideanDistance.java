@@ -1,7 +1,7 @@
 package math;
 
-import exceptions.DimensionMismatchException;
 import model.WordEmbedding;
+
 import java.util.Comparator;
 import java.util.Map;
 //4
@@ -16,14 +16,18 @@ public class EuclideanDistance implements Distance {
      * between corresponding coordinates.
      */
     @Override
-    public double calculate(WordEmbedding v1, WordEmbedding v2) {
-        if (v1.getDimension() != v2.getDimension()) {
-            throw new DimensionMismatchException(v1.getDimension(), v2.getDimension());
+    public double calculate(WordEmbedding w1, WordEmbedding w2) {
+        double[] v1 = w1.getVectorValues();
+        double[] v2 = w2.getVectorValues();
+
+        if (v1.length != v2.length) {
+            throw new IllegalArgumentException("Vector dimensions must match for Euclidean Distance");
         }
+
         double sum = 0.0;
-        for (int i = 0; i < v1.getDimension(); i++) {
-            // accumulates the squared difference for each dimension
-            sum += Math.pow(v1.getCoordinate(i) - v2.getCoordinate(i), 2);
+        for (int i = 0; i < v1.length; i++) {
+            double diff = v1[i] - v2[i];
+            sum += diff * diff;
         }
         return Math.sqrt(sum);
     }

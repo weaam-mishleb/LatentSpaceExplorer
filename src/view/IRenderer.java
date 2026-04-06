@@ -54,4 +54,6 @@ public interface IRenderer {
 
     /** applies a color gradient to nodes based on their position on a projection axis. */
     void applyProjectionGradient(List<ProjectionResult> projection);
+    /** dims all nodes except the provided list of active words to create a focus effect. */
+    void dimAllExcept(List<String> activeWords);
 }

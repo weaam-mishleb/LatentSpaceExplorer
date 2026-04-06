@@ -110,7 +110,6 @@ public class SceneRenderer3D implements IRenderer {
         sphereToWordMap.put(sphere, word);
         wordToSphereMap.put(word.getWord(), sphere);
 
-        // Updated to use the new Vector interface!
         sphere.setTranslateX(word.getVector().getValueAt(0) * SCALE);
         sphere.setTranslateY(word.getVector().getValueAt(1) * SCALE);
         sphere.setTranslateZ(word.getVector().getValueAt(2) * SCALE);
@@ -146,7 +145,6 @@ public class SceneRenderer3D implements IRenderer {
             WordEmbedding word = entry.getValue();
             Sphere sphere = entry.getKey();
 
-            // Updated to use the new Vector interface!
             sphere.setTranslateX(word.getVector().getValueAt(x) * SCALE);
             sphere.setTranslateY(word.getVector().getValueAt(y) * SCALE);
             sphere.setTranslateZ(is3DMode ? word.getVector().getValueAt(z) * SCALE : 0);
@@ -210,8 +208,8 @@ public class SceneRenderer3D implements IRenderer {
             invRotY.angleProperty().bind(rotateY.angleProperty().multiply(-1));
 
             labelContainer.getTransforms().add(new javafx.scene.transform.Translate(s.getTranslateX(), s.getTranslateY(), s.getTranslateZ()));
-            labelContainer.getTransforms().addAll(invRotY, invRotX); // Apply billboard
-            labelContainer.getTransforms().add(new javafx.scene.transform.Translate(radius + 10, -radius - 15, -1)); // offset from sphere
+            labelContainer.getTransforms().addAll(invRotY, invRotX);
+            labelContainer.getTransforms().add(new javafx.scene.transform.Translate(radius + 10, -radius - 15, -1));
 
             labelsGroup.getChildren().add(labelContainer);
         }
@@ -220,43 +218,46 @@ public class SceneRenderer3D implements IRenderer {
     private void highlightSphere(Sphere s, Color c, double r) {
         if (s == null) return;
         s.setRadius(r);
-        ((PhongMaterial) s.getMaterial()).setDiffuseColor(c);
+        s.setMaterial(new PhongMaterial(c));
     }
 
     @Override
     public void resetSphereColors() {
+        PhongMaterial defaultMat = new PhongMaterial(Color.web("#004488"));
         for (Sphere s : sphereToWordMap.keySet()) {
-            s.setRadius(4);
-            // Revert to dark blue
-            ((PhongMaterial) s.getMaterial()).setDiffuseColor(Color.web("#004488"));
+            s.setRadius(2);
+            s.setMaterial(defaultMat);
+            s.setOpacity(1.0);
+        }
+    }
+
+    @Override
+    public void dimAllExcept(List<String> activeWords) {
+        for (Map.Entry<Sphere, WordEmbedding> entry : sphereToWordMap.entrySet()) {
+            if (!activeWords.contains(entry.getValue().getWord())) {
+                entry.getKey().setOpacity(0.08);
+            } else {
+                entry.getKey().setOpacity(1.0);
+            }
         }
     }
 
     @Override
     public void applyProjectionGradient(List<model.ProjectionResult> projection) {
         if (projection == null || projection.isEmpty()) return;
-        double min = Double.MAX_VALUE;
-        double max = -Double.MAX_VALUE;
 
-        for (model.ProjectionResult entry : projection) {
-            double val = entry.getProjectionValue();
-            if (val < min) min = val;
-            if (val > max) max = val;
-        }
-
-        double range = (max - min) == 0 ? 1 : (max - min);
-
-        for (model.ProjectionResult entry : projection) {
-            String word = entry.getWord();
-            Double val = entry.getProjectionValue();
-            javafx.scene.shape.Sphere s = wordToSphereMap.get(word);
+        int n = projection.size();
+        for (int i = 0; i < n; i++) {
+            model.ProjectionResult entry = projection.get(i);
+            Sphere s = wordToSphereMap.get(entry.getWord());
 
             if (s != null) {
-                double normalized = (val - min) / range;
-                double hue = 240.0 * (1.0 - normalized);
+                double rankNormalized = (double) i / Math.max(1, (n - 1));
+
+                double hue = 240.0 * (1.0 - rankNormalized);
                 Color scaleColor = Color.hsb(hue, 1.0, 1.0);
 
-                ((javafx.scene.paint.PhongMaterial) s.getMaterial()).setDiffuseColor(scaleColor);
+                s.setMaterial(new PhongMaterial(scaleColor));
             }
         }
     }

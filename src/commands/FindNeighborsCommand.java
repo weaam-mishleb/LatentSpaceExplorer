@@ -18,7 +18,6 @@ public class FindNeighborsCommand extends AbstractVisualCommand {
     private final String searchWord;
     private final int k;
 
-    // ADDED: Class field to store the results
     private List<SearchResult> results;
 
     public FindNeighborsCommand(AnalysisService service, IRenderer renderer, Label resultLabel, String prevWord, String searchWord, int k) {
@@ -33,21 +32,27 @@ public class FindNeighborsCommand extends AbstractVisualCommand {
     @Override
     protected void doExecute() {
         try {
-            // CHANGED: Saving the results directly to the class field
             this.results = service.findNearestNeighbors(searchWord, k);
-
             if (this.results.isEmpty()) {
                 resultLabel.setText("Word not found.");
                 return;
             }
 
+            java.util.List<String> activeWords = new java.util.ArrayList<>();
+            activeWords.add(searchWord);
+
             renderer.highlightWord(searchWord, AppConstants.COLOR_ANALOGY_RESULT, AppConstants.RADIUS_TARGET);
 
             for (SearchResult entry : this.results) {
                 String neighborWord = entry.getWord();
+                activeWords.add(neighborWord);
+
                 renderer.highlightWord(neighborWord, AppConstants.COLOR_NEIGHBOR, AppConstants.RADIUS_NEIGHBOR);
                 renderer.drawLineBetweenWords(searchWord, neighborWord);
             }
+
+            renderer.dimAllExcept(activeWords);
+
             renderer.zoomToWord(searchWord);
             resultLabel.setText("Showing " + k + " neighbors for: " + searchWord);
 
@@ -56,7 +61,6 @@ public class FindNeighborsCommand extends AbstractVisualCommand {
         }
     }
 
-    // ADDED: Getter so the Controller can pull the data for the Alert popup
     public List<SearchResult> getResults() {
         return this.results;
     }

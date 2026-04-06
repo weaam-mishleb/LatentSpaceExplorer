@@ -4,13 +4,12 @@ import javafx.scene.Group;
 import javafx.scene.SubScene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.text.Text;
-import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-import model.ProjectionResult;
+import javafx.scene.text.Text;
 import model.VectorSpace;
 import model.WordEmbedding;
 
@@ -177,23 +176,35 @@ public class SceneRenderer2D implements IRenderer {
         for (Circle c : circleToWordMap.keySet()) {
             c.setRadius(4);
             c.setFill(Color.web("#004488"));
+            c.setOpacity(1.0);
         }
     }
 
     @Override
-    public void applyProjectionGradient(List<ProjectionResult> projection) {
-        if (projection == null || projection.isEmpty()) return;
-        double min = Double.MAX_VALUE, max = -Double.MAX_VALUE;
-        for (ProjectionResult entry : projection) {
-            if (entry.getProjectionValue() < min) min = entry.getProjectionValue();
-            if (entry.getProjectionValue() > max) max = entry.getProjectionValue();
+    public void dimAllExcept(List<String> activeWords) {
+        for (Map.Entry<Circle, WordEmbedding> entry : circleToWordMap.entrySet()) {
+            if (!activeWords.contains(entry.getValue().getWord())) {
+                entry.getKey().setOpacity(0.08);
+            } else {
+                entry.getKey().setOpacity(1.0);
+            }
         }
-        double range = (max - min) == 0 ? 1 : (max - min);
-        for (ProjectionResult entry : projection) {
+    }
+
+    @Override
+    public void applyProjectionGradient(List<model.ProjectionResult> projection) {
+        if (projection == null || projection.isEmpty()) return;
+
+        int n = projection.size();
+        for (int i = 0; i < n; i++) {
+            model.ProjectionResult entry = projection.get(i);
             Circle c = wordToCircleMap.get(entry.getWord());
+
             if (c != null) {
-                double normalized = (entry.getProjectionValue() - min) / range;
-                c.setFill(Color.hsb(240.0 * (1.0 - normalized), 1.0, 1.0));
+                double rankNormalized = (double) i / Math.max(1, (n - 1));
+
+                double hue = 240.0 * (1.0 - rankNormalized);
+                c.setFill(Color.hsb(hue, 1.0, 1.0));
             }
         }
     }

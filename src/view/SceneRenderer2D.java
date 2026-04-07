@@ -9,6 +9,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import model.DTO.ProjectionResult;
 import model.VectorSpace;
 import model.WordEmbedding;
 import java.util.HashMap;
@@ -194,12 +195,12 @@ public class SceneRenderer2D implements IRenderer {
     }
 
     @Override
-    public void applyProjectionGradient(List<model.ProjectionResult> projection) {
+    public void applyProjectionGradient(List<ProjectionResult> projection) {
         if (projection == null || projection.isEmpty()) return;
 
         int n = projection.size();
         for (int i = 0; i < n; i++) {
-            model.ProjectionResult entry = projection.get(i);
+            ProjectionResult entry = projection.get(i);
             Circle c = wordToCircleMap.get(entry.getWord());
 
             if (c != null) {

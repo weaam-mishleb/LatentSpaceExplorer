@@ -5,7 +5,6 @@ import config.AppConstants;
 import view.IRenderer;
 import logic.AnalysisService;
 import exceptions.WordNotFoundException;
-
 //16
 /**
  * this command handles spatial navigation within the 3D vector space.
@@ -13,14 +12,14 @@ import exceptions.WordNotFoundException;
  */
 public class ZoomToWordCommand extends AbstractVisualCommand {
     private final String searchWord;
-    private final AnalysisService service; // הוספנו את הסרוויס כדי שנוכל לבדוק נתונים
+    private final AnalysisService service;
 
     /**
      * constructs the command to find and zoom into a specific word.
      */
     public ZoomToWordCommand(AnalysisService service, IRenderer renderer, Label resultLabel, String prevWord, String searchWord) {
         super(renderer, resultLabel, prevWord);
-        this.service = service; // שומרים את הסרוויס
+        this.service = service;
         this.searchWord = searchWord.trim();
         this.targetWord = this.searchWord;
     }

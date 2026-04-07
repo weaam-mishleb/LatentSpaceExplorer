@@ -2,7 +2,7 @@ package view;
 
 import javafx.scene.SubScene;
 import javafx.scene.paint.Color;
-import model.ProjectionResult;
+import model.DTO.ProjectionResult;
 import model.VectorSpace;
 import java.util.List;
 import java.util.function.Consumer;

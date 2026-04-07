@@ -1,5 +1,6 @@
 package model;
 import java.util.Arrays;
+
 public class PCAVector implements Vector {
     private final double[] values;
     public PCAVector(double[] values) {

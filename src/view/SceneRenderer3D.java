@@ -13,6 +13,7 @@ import javafx.scene.shape.Cylinder;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
+import model.DTO.ProjectionResult;
 import model.VectorSpace;
 import model.WordEmbedding;
 import java.util.HashMap;
@@ -244,12 +245,12 @@ public class SceneRenderer3D implements IRenderer {
     }
 
     @Override
-    public void applyProjectionGradient(List<model.ProjectionResult> projection) {
+    public void applyProjectionGradient(List<ProjectionResult> projection) {
         if (projection == null || projection.isEmpty()) return;
 
         int n = projection.size();
         for (int i = 0; i < n; i++) {
-            model.ProjectionResult entry = projection.get(i);
+            ProjectionResult entry = projection.get(i);
             Sphere s = wordToSphereMap.get(entry.getWord());
 
             if (s != null) {

@@ -38,7 +38,7 @@ public class VectorSpace {
     }
 
     /**
-     * Returns The WordEmbedding, or null if not found.
+     * returns The WordEmbedding, or null if not found.
      */
     public WordEmbedding getEmbedding(String word) {
         return quickLookup.get(word);

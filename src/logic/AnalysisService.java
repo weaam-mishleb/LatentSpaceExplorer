@@ -1,8 +1,7 @@
 package logic;
-
 import exceptions.WordNotFoundException;
-import model.ProjectionResult;
-import model.SearchResult;
+import model.DTO.ProjectionResult;
+import model.DTO.SearchResult;
 import model.VectorSpace;
 import model.WordEmbedding;
 import math.Distance;

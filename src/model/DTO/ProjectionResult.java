@@ -1,4 +1,4 @@
-package model;
+package model.DTO;
 
 /**
  * this class encapsulates the result of projecting a word's vector onto a specific axis or direction.
@@ -8,7 +8,7 @@ public class ProjectionResult {
     private final double projectionValue;
 
     /**
-     * Constructs a new ProjectionResult.
+     * constructs a new ProjectionResult
      */
     public ProjectionResult(String word, double projectionValue) {
         this.word = word;

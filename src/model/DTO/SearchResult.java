@@ -1,4 +1,7 @@
-package model;
+package model.DTO;
+
+import model.WordEmbedding;
+
 /**
  * this class represents a single result from a vector search operation,
  */

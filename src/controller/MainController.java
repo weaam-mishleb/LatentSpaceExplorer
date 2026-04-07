@@ -9,6 +9,7 @@ import logic.AnalysisService;
 import math.CosineSimilarity;
 import math.Distance;
 import math.EuclideanDistance;
+import model.DTO.SearchResult;
 import model.VectorSpace;
 import view.IRenderer;
 import java.util.HashMap;
@@ -85,11 +86,10 @@ public class MainController {
         FindNeighborsCommand cmd = new FindNeighborsCommand(service, renderer, resultLabel, currentFocusWord, targetWord, 5);
         commandManager.executeCommand(cmd);
         currentFocusWord = cmd.getTargetWord();
-
-        java.util.List<model.SearchResult> results = cmd.getResults();
+        java.util.List<SearchResult> results = cmd.getResults();
         if (results != null && !results.isEmpty()) {
             StringBuilder sb = new StringBuilder();
-            for (model.SearchResult result : results) {
+            for (SearchResult result : results) {
                 sb.append(String.format("%s -> %.3f\n", result.getWord(), result.getScore()));
             }
             javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);

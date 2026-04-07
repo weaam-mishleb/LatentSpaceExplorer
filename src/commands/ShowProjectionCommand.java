@@ -3,7 +3,7 @@ package commands;
 import exceptions.WordNotFoundException;
 import javafx.scene.control.Label;
 import logic.AnalysisService;
-import model.ProjectionResult;
+import model.DTO.ProjectionResult;
 import config.AppConstants;
 import view.IRenderer;
 import java.util.List;

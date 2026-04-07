@@ -2,7 +2,7 @@ package commands;
 
 import javafx.scene.control.Label;
 import logic.AnalysisService;
-import model.SearchResult;
+import model.DTO.SearchResult;
 import config.AppConstants;
 import view.IRenderer;
 //12

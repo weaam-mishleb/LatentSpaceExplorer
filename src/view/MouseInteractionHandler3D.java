@@ -8,7 +8,7 @@ import javafx.scene.transform.Rotate;
  * this class handles 3D navigation by translating mouse gestures into camera
  * movements (panning and zooming) and world transformations (rotation).
  */
-public class MouseInteractionHandler {
+public class MouseInteractionHandler3D {
     private final PerspectiveCamera camera;
     private final Group worldRoot;
     private final Rotate rotateX;
@@ -17,7 +17,7 @@ public class MouseInteractionHandler {
     /**
      * constructs the handler with references to the 3D scene elements.
      */
-    public MouseInteractionHandler(PerspectiveCamera camera, Group worldRoot, Rotate rotateX, Rotate rotateY) {
+    public MouseInteractionHandler3D(PerspectiveCamera camera, Group worldRoot, Rotate rotateX, Rotate rotateY) {
         this.camera = camera;
         this.worldRoot = worldRoot;
         this.rotateX = rotateX;

@@ -37,12 +37,10 @@ public class TabFactory {
         Button btnFind = new Button("Find & Zoom");
         Button btnNeighbors = new Button("Show Neighbors");
         Button btnReset = new Button("Reset View");
-        // Event Binding: UI buttons trigger logic via provided Runnables
         btnFind.setOnAction(e -> onFind.run());
         btnNeighbors.setOnAction(e -> onNeighbors.run());
         btnReset.setOnAction(e -> onReset.run());
         searchRow.getChildren().addAll(new Label("Search:"), txtSearchReference, btnFind, btnNeighbors, btnReset, new Separator(javafx.geometry.Orientation.VERTICAL), toggle2D3D);
-        // Row 2: Vector Dimension Control (Axes Selection)
         HBox axesRow = new HBox(10);
         axesRow.setAlignment(Pos.CENTER);
         Button btnUpdate = new Button("Update Axes");
@@ -69,14 +67,10 @@ public class TabFactory {
         VBox container = new VBox(5);
         container.setAlignment(Pos.CENTER);
         container.setPadding(new javafx.geometry.Insets(5));
-
-        // Section 1: Distance Calculation & Strategy Toggle
         HBox row1 = new HBox(8);
         row1.setAlignment(Pos.CENTER);
         RadioButton rbCosine = new RadioButton("Cos"); rbCosine.setUserData("cosine"); rbCosine.setToggleGroup(metricGroup); rbCosine.setSelected(true);
         RadioButton rbEuc = new RadioButton("Euc"); rbEuc.setUserData("euclidean"); rbEuc.setToggleGroup(metricGroup);
-
-        // Strategy Pattern in action: Swapping algorithms via RadioButtons
         rbCosine.setOnAction(e -> onMetricChange.run());
         rbEuc.setOnAction(e -> onMetricChange.run());
 
@@ -85,8 +79,6 @@ public class TabFactory {
         Button btnDist = new Button("Calc Distance");
         btnDist.setOnAction(e -> onDist.execute(w1.getText(), w2.getText()));
         row1.getChildren().addAll(rbCosine, rbEuc, new Separator(javafx.geometry.Orientation.VERTICAL), w1, w2, btnDist);
-
-        // Section 2: Vector Analogies and Centroid Calculation
         HBox row2 = new HBox(8);
         row2.setAlignment(Pos.CENTER);
 
@@ -101,7 +93,7 @@ public class TabFactory {
         Button btnGroup = new Button("Centroid");
 
         btnGroup.setOnAction(e -> {
-            int k = 5; // Default K value
+            int k = 5;
             try { if (!txtK.getText().isEmpty()) k = Integer.parseInt(txtK.getText()); }
             catch(NumberFormatException ex) { /* Fallback to default */ }
             onGroup.execute(txtGroup.getText(), k);
@@ -109,7 +101,6 @@ public class TabFactory {
 
         row2.getChildren().addAll(a, new Label("-"), b, new Label("+"), c, btnAnalogy, new Separator(javafx.geometry.Orientation.VERTICAL), txtGroup, txtK, btnGroup);
 
-        // Section 3: Custom Axis Projection
         HBox row3 = new HBox(8);
         row3.setAlignment(Pos.CENTER);
         TextField pStart = new TextField(); pStart.setPromptText("start"); pStart.setPrefWidth(80);

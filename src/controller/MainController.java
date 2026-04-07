@@ -11,18 +11,15 @@ import math.Distance;
 import math.EuclideanDistance;
 import model.VectorSpace;
 import view.IRenderer;
-
 import java.util.HashMap;
 import java.util.Map;
-
 /**
- * This class acts as the mediator between the UI (View) and the Business Logic (Model/Service).
- * It translates user interactions into concrete Commands and manages the application state.
+ * this class acts as the mediator between the UI (View) and the Business Logic (Model/Service).
+ * ut translates user interactions into concrete Commands and manages the application state.
  */
 public class MainController {
     private final AnalysisService service;
     private final CommandManager commandManager = new CommandManager();
-    // CHANGED: Removed 'final' so we can swap 2D/3D renderers at runtime
     private IRenderer renderer;
     private final Label resultLabel;
     private final ToggleGroup metricGroup;
@@ -39,16 +36,12 @@ public class MainController {
         this.metricGroup = metricGroup;
     }
 
-    // ADDED: Setter to allow dynamic switching between 2D and 3D views
     public void setRenderer(IRenderer newRenderer) {
         this.renderer = newRenderer;
     }
 
     public void undo() { commandManager.undo(); }
     public void redo() { commandManager.redo(); }
-
-    // NOTE: executeWithHistory was DELETED because it caused a "Double Push" bug!
-    // The specific commands below already register themselves in the CommandManager.
 
     public void zoomToWordAction(String word) {
         ZoomToWordCommand cmd = new ZoomToWordCommand(service, renderer, resultLabel, currentFocusWord, word);

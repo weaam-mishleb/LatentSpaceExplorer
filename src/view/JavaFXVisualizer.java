@@ -14,14 +14,11 @@ import java.util.function.Consumer;
 public class JavaFXVisualizer extends Application implements Visualizer {
     private static VectorSpace fullSpace;
     private static VectorSpace pcaSpace;
-
-    // Holding both renderers!
     private SceneRenderer3D renderer3D;
     private SceneRenderer2D renderer2D;
     private SubScene subScene3D;
     private SubScene subScene2D;
-
-    private Pane viewContainer; // The box that holds the active view
+    private Pane viewContainer;
     private MainController controller;
 
     private Label floatingLabel;
@@ -44,8 +41,6 @@ public class JavaFXVisualizer extends Application implements Visualizer {
         createFloatingLabel(mainLayout);
         createResultOverlay(mainLayout);
         metricGroup = new ToggleGroup();
-
-        // 1. Initialize both renderers
         renderer3D = new SceneRenderer3D(floatingLabel);
         renderer3D.initializeSpace(pcaSpace);
         subScene3D = renderer3D.createSubScene(1000, 800);
@@ -53,23 +48,15 @@ public class JavaFXVisualizer extends Application implements Visualizer {
         renderer2D = new SceneRenderer2D(floatingLabel);
         renderer2D.initializeSpace(pcaSpace);
         subScene2D = renderer2D.createSubScene(1000, 800);
-
-        // 2. Initialize Controller with default 3D
         controller = new MainController(fullSpace, renderer3D, resultLabel, metricGroup);
-
-        // 3. Bind click events DIRECTLY (No more double-push bug!)
         Consumer<String> onWordClicked = clickedWord -> controller.showNearestNeighbors(clickedWord);
         renderer3D.setOnWordClicked(onWordClicked);
         renderer2D.setOnWordClicked(onWordClicked);
 
         createUndoOverlay(mainLayout);
-
-        // 4. Setup the View Container
         viewContainer = new Pane(subScene3D); // Start with 3D
         mainLayout.getChildren().add(viewContainer);
         viewContainer.toBack();
-
-        // Bind sizes for both scenes
         subScene3D.widthProperty().bind(mainLayout.widthProperty());
         subScene3D.heightProperty().bind(mainLayout.heightProperty());
         subScene2D.widthProperty().bind(mainLayout.widthProperty());
@@ -117,8 +104,6 @@ public class JavaFXVisualizer extends Application implements Visualizer {
         toggle2D3D.setOnAction(e -> toggleDimensionMode());
 
         xCombo = createCombo(0); yCombo = createCombo(1); zCombo = createCombo(2);
-
-        // Pass direct method references without executeWithHistory wrappers!
         Tab exploreTab = TabFactory.createExploreTab(
                 () -> controller.zoomToWordAction(txtSearch.getText()),
                 () -> controller.showNearestNeighbors(txtSearch.getText()),

@@ -22,15 +22,11 @@ public class VectorSpace {
     }
 
     /**
-     * Adds a new WordEmbedding to the space. Ensures all embeddings have the same dimension.
+     * adds a new WordEmbedding to the space. Ensures all embeddings have the same dimension.
      */
     public void addWord(WordEmbedding word) {
         if (word == null) return;
-
-        // Using our new Vector Interface to get the dimension!
         int currentDim = word.getVector().getDimension();
-
-        // The first added embedding strictly defines the dimension size for the entire space
         if (dimensions == -1) {
             dimensions = currentDim;
         } else if (currentDim != dimensions) {
@@ -49,22 +45,21 @@ public class VectorSpace {
     }
 
     /**
-     * Returns all stored word embeddings.
+     * returns all stored word embeddings.
      */
     public List<WordEmbedding> getAllEmbeddings() {
-        // Excellent use of unmodifiableList for encapsulation!
         return Collections.unmodifiableList(storage);
     }
 
     /**
-     * Returns The total number of embeddings.
+     * returns The total number of embeddings.
      */
     public int getSize() {
         return storage.size();
     }
 
     /**
-     * Returns the uniform dimension size for all embeddings in this space.
+     * returns the uniform dimension size for all embeddings in this space.
      */
     public int getDimensions() {
         return dimensions;

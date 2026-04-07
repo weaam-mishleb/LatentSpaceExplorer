@@ -1,5 +1,4 @@
 package view;
-
 import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Group;
@@ -83,7 +82,7 @@ public class SceneRenderer3D implements IRenderer {
 
         scene.setCamera(camera);
 
-        MouseInteractionHandler interactionHandler = new MouseInteractionHandler(camera, worldRoot, rotateX, rotateY);
+        MouseInteractionHandler3D interactionHandler = new MouseInteractionHandler3D(camera, worldRoot, rotateX, rotateY);
         interactionHandler.attachToScene(scene);
     }
 
@@ -220,24 +219,26 @@ public class SceneRenderer3D implements IRenderer {
         s.setRadius(r);
         s.setMaterial(new PhongMaterial(c));
     }
-
     @Override
     public void resetSphereColors() {
         PhongMaterial defaultMat = new PhongMaterial(Color.web("#004488"));
+        defaultMat.setSpecularColor(Color.LIGHTBLUE);
+
         for (Sphere s : sphereToWordMap.keySet()) {
-            s.setRadius(2);
+            s.setRadius(4);
             s.setMaterial(defaultMat);
-            s.setOpacity(1.0);
         }
     }
 
     @Override
     public void dimAllExcept(List<String> activeWords) {
+        PhongMaterial dimMaterial = new PhongMaterial(Color.web("#004488", 0.17));
+
         for (Map.Entry<Sphere, WordEmbedding> entry : sphereToWordMap.entrySet()) {
+            Sphere currentSphere = entry.getKey();
             if (!activeWords.contains(entry.getValue().getWord())) {
-                entry.getKey().setOpacity(0.08);
-            } else {
-                entry.getKey().setOpacity(1.0);
+                currentSphere.setMaterial(dimMaterial);
+                currentSphere.setRadius(4);
             }
         }
     }

@@ -1,5 +1,4 @@
 package view;
-
 import javafx.scene.Group;
 import javafx.scene.SubScene;
 import javafx.scene.control.Label;
@@ -12,7 +11,6 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import model.VectorSpace;
 import model.WordEmbedding;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +46,14 @@ public class SceneRenderer2D implements IRenderer {
     public SubScene createSubScene(double width, double height) {
         this.sceneWidth = width;
         this.sceneHeight = height;
-        // Center the 0,0 coordinate in the middle of the screen
         mainPane.setTranslateX(width / 2);
         mainPane.setTranslateY(height / 2);
-        return new SubScene(mainPane, width, height);
+
+        SubScene subScene = new SubScene(mainPane, width, height);
+        MouseInteractionHandler2D interactionHandler = new MouseInteractionHandler2D(mainPane);
+        interactionHandler.attachToScene(subScene);
+
+        return subScene;
     }
 
     @Override

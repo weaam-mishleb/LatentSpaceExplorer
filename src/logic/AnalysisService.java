@@ -8,7 +8,6 @@ import model.WordEmbedding;
 import math.Distance;
 import math.VectorMath;
 import java.util.*;
-
 /**
  * Design Pattern: Facade
  * This class provides the core business logic for vector analysis. It orchestrates
@@ -99,7 +98,6 @@ public class AnalysisService {
                 }
             }
         }
-
         if (bestMatch != null) {
             return new SearchResult(bestMatch.getKey(), bestMatch.getValue());
         }
@@ -175,7 +173,6 @@ public class AnalysisService {
                 double wVecRelative = w.getVector().getValueAt(i) - vStart.getVector().getValueAt(i);
                 dot += wVecRelative * axisVector[i];
             }
-            // Added protection against division by zero!
             double projection = axisNormSq == 0 ? 0 : dot / axisNormSq;
             allProjections.add(new ProjectionResult(w.getWord(), projection));
         }

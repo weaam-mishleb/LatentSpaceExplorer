@@ -1,5 +1,4 @@
 package model;
-
 public interface Vector {
     /**
       returns the raw double array representation of the vector.

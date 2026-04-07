@@ -14,9 +14,6 @@ public abstract class AbstractVisualCommand implements Command {
     private final String prevWord;
     protected String targetWord;
 
-    /**
-     * constructs the base visual command.
-     */
     public AbstractVisualCommand(IRenderer renderer, Label resultLabel, String prevWord) {
         this.renderer = renderer;
         this.resultLabel = resultLabel;

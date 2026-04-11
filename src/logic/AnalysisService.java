@@ -38,26 +38,7 @@ public class AnalysisService {
     public List<SearchResult> findNearestNeighbors(String targetWord, int k) {
         WordEmbedding targetVec = space.getEmbedding(targetWord);
         if (targetVec == null) throw new WordNotFoundException(targetWord);
-
-        List<Map.Entry<WordEmbedding, Double>> distances = new ArrayList<>();
-
-        for (WordEmbedding w : space.getAllEmbeddings()) {
-            if (!w.getWord().equals(targetWord)) {
-                double dist = metric.calculate(targetVec, w);
-                distances.add(new AbstractMap.SimpleEntry<>(w, dist));
-            }
-        }
-
-        distances.sort(metric.getResultComparator());
-        List<SearchResult> results = new ArrayList<>();
-        int limit = Math.min(k, distances.size());
-
-        for (int i = 0; i < limit; i++) {
-            Map.Entry<WordEmbedding, Double> entry = distances.get(i);
-            results.add(new SearchResult(entry.getKey(), entry.getValue()));
-        }
-
-        return results;
+        return getKNearestToVector(targetVec, k, Collections.singletonList(targetWord));
     }
 
     /**

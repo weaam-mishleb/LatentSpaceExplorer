@@ -1,7 +1,11 @@
 package IO;
+
 import exceptions.DataLoadException;
+import model.RawVector;
+import model.Vector;
 import model.VectorSpace;
 import model.WordEmbedding;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -10,7 +14,7 @@ import java.io.IOException;
  * Design Pattern: Strategy
  * this class handles the extraction of word embeddings from a JSON file.
  * By implementing the IDataLoader interface, it supports Polymorphism, allowing
- */
+   */
 public class JsonVecLoader implements IDataLoader {
     /**
      * reads a JSON file, parses its contents manually, and populates the given VectorSpace.
@@ -48,7 +52,8 @@ public class JsonVecLoader implements IDataLoader {
                     for (int i = 0; i < numStrings.length; i++) {
                         vector[i] = Double.parseDouble(numStrings[i].trim());
                     }
-                    space.addWord(new WordEmbedding(word, vector));
+                    Vector SVector = new RawVector(vector);
+                    space.addWord(new WordEmbedding(word, SVector));
                     count++;
                 }
             } catch (Exception e) {

@@ -34,7 +34,6 @@ public class CommandManager {
             }
         }
     }
-
     /**
      * the redone command is moved back to the undo stack.
      */

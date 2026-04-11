@@ -8,7 +8,6 @@ public interface Vector {
       returns the dimensionality of this vector.
      */
     int getDimension();
-
     /**
       returns a specific value at a given index.
      */

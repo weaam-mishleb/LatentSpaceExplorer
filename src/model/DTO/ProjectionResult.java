@@ -9,6 +9,7 @@ public class ProjectionResult {
 
     /**
      * constructs a new ProjectionResult
+     *
      */
     public ProjectionResult(String word, double projectionValue) {
         this.word = word;

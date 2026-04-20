@@ -15,7 +15,6 @@ public class Launcher {
         if (!fullJsonFile.exists() || !pcaJsonFile.exists()) {
             System.out.println("JSON files missing. Orchestrating Python to generate vectors...");
             boolean pythonSuccess = PyAdapter.runFile();
-
             if (!pythonSuccess) {
                 System.err.println("Critical Error: Python script failed. Cannot start application.");
                 return;
@@ -23,7 +22,6 @@ public class Launcher {
             fullJsonFile = new File("full_vectors.json");
             pcaJsonFile = new File("pca_vectors.json");
         }
-
         VectorSpace fullSpace = new VectorSpace();
         VectorSpace pcaSpace = new VectorSpace();
 
@@ -37,7 +35,6 @@ public class Launcher {
             return;
         }
 
-        // Launches the UI application
         Visualizer visualizer = new JavaFXVisualizer();
         visualizer.display(fullSpace, pcaSpace);
     }

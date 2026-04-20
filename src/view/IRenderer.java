@@ -13,8 +13,6 @@ import java.util.function.Consumer;
  */
 public interface IRenderer {
 
-    // --- Lifecycle and Initialization ---
-
     /** sets the callback for when a word node is clicked. */
     void setOnWordClicked(Consumer<String> onWordClicked);
 
@@ -27,8 +25,6 @@ public interface IRenderer {
     /** updates the coordinates of all nodes, allowing transitions between dimensions. */
     void updateAllPositions(int x, int y, int z, boolean is3DMode);
 
-    // --- Viewport Controls ---
-
     /** returns the viewpoint/camera to its original starting position. */
     void resetCamera();
 
@@ -37,8 +33,6 @@ public interface IRenderer {
 
     /** adjusts the viewpoint to fit two specific points/words into the view. */
     void focusOnTwoPoints(String w1, String w2);
-
-    // --- Visual Manipulation ---
 
     /** clears all drawn lines (relationships) from the scene. */
     void clearLines();

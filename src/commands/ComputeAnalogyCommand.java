@@ -21,7 +21,6 @@ public class ComputeAnalogyCommand extends AbstractVisualCommand {
     }
 
     /**
-     * The specific execution hook called by the Template Method in AbstractVisualCommand.
      * Calculates the target vector, finds the closest word, and updates the 3D scene.
      */
     @Override

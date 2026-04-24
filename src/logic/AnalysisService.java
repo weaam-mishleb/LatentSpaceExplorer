@@ -27,11 +27,6 @@ public class AnalysisService {
     public void setMetric(Distance metric) {
         this.metric = metric;
     }
-
-    public Distance getMetric() {
-        return metric;
-    }
-
     /**
      * Finds the K-nearest words to a given target word using the current distance metric.
      */
@@ -136,27 +131,14 @@ public class AnalysisService {
         WordEmbedding vStart = space.getEmbedding(startWord);
         WordEmbedding vEnd = space.getEmbedding(endWord);
         if (vStart == null || vEnd == null) throw new WordNotFoundException(startWord + " or " + endWord);
-
-        int dim = vStart.getVector().getDimension();
-        double[] axisVector = new double[dim];
-        double axisNormSq = 0;
-
-        for(int i = 0; i < dim; i++) {
-            axisVector[i] = vEnd.getVector().getValueAt(i) - vStart.getVector().getValueAt(i);
-            axisNormSq += axisVector[i] * axisVector[i];
-        }
+        double[] axisVector = VectorMath.subtractVectors(vEnd.getVector(), vStart.getVector());
+        double axisNormSq = VectorMath.calculateSquaredNorm(axisVector);
 
         List<ProjectionResult> allProjections = new ArrayList<>();
         for (WordEmbedding w : space.getAllEmbeddings()) {
-            double dot = 0;
-            for(int i = 0; i < dim; i++) {
-                double wVecRelative = w.getVector().getValueAt(i) - vStart.getVector().getValueAt(i);
-                dot += wVecRelative * axisVector[i];
-            }
-            double projection = axisNormSq == 0 ? 0 : dot / axisNormSq;
+            double projection = VectorMath.calculateScalarProjection(w.getVector(), vStart.getVector(), axisVector, axisNormSq);
             allProjections.add(new ProjectionResult(w.getWord(), projection));
         }
-
         allProjections.sort(Comparator.comparingDouble(ProjectionResult::getProjectionValue));
         List<ProjectionResult> results = new ArrayList<>();
         int actualLimit = Math.min(limit, allProjections.size());

@@ -1,6 +1,8 @@
 package math;
 
+import model.Vector;
 import model.WordEmbedding;
+
 import java.util.List;
 
 public class VectorMath {
@@ -39,5 +41,33 @@ public class VectorMath {
         }
 
         return result;
+    }
+    public static double[] subtractVectors(Vector v1, Vector v2) {
+        int dim = v1.getDimension();
+        double[] result = new double[dim];
+        for (int i = 0; i < dim; i++) {
+            result[i] = v1.getValueAt(i) - v2.getValueAt(i);
+        }
+        return result;
+    }
+    public static double calculateSquaredNorm(double[] vector) {
+        double normSq = 0;
+        for (double val : vector) {
+            normSq += val * val;
+        }
+        return normSq;
+    }
+
+    public static double calculateScalarProjection(Vector target, Vector start, double[] axisVector, double axisNormSq) {
+        if (axisNormSq == 0) return 0;
+
+        int dim = target.getDimension();
+        double dot = 0;
+        for (int i = 0; i < dim; i++) {
+            double relativeVal = target.getValueAt(i) - start.getValueAt(i);
+            dot += relativeVal * axisVector[i];
+        }
+
+        return dot / axisNormSq;
     }
 }

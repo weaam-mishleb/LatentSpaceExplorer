@@ -69,7 +69,7 @@ public class JavaFXVisualizer extends Application implements Visualizer {
         AnchorPane.setRightAnchor(bottomTabs, 0.0);
 
         Scene mainScene = new Scene(mainLayout, 1100, 750);
-        primaryStage.setTitle("Latent Space Explorer - 2D/3D Engine");
+        primaryStage.setTitle("Latent Space Explorer");
         primaryStage.setScene(mainScene);
         primaryStage.show();
     }
